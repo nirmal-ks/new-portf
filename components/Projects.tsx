@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { ArrowUpRight, CheckCircle2, X, Layers, MessageSquare } from "lucide-react";
-import { CuteIronBot, CuteDogBot, CuteRexBot, CuteServiceBot, CuteDumEBot, CuteDroneBot } from "./Robots";
+import { CuteIronBot, CuteDogBot, CuteRexBot, CuteServiceBot, CuteDumEBot, CuteDroneBot, CuteCoderBot, CuteArchitectBot, CuteSolderingBot } from "./Robots";
 import { GithubIcon } from "./BrandIcons";
 import { projects, profile, PROJECT_FILTERS, type Project, type ProjectCategory } from "@/lib/profile";
 
 // Robot mascot per project id
 const ROBOTS: Record<string, React.ReactNode> = {
+  "ai-interview": <CuteArchitectBot size={58} />,
+  "ai-code-conversion": <CuteCoderBot size={58} />,
+  "ai-cork": <CuteServiceBot size={58} />,
+  "kicad-pcb-ai": <CuteSolderingBot size={58} />,
+  "mqtt-recorder": <CuteDumEBot size={58} />,
   unitree: <CuteDogBot size={60} />,
   rex: <CuteRexBot size={60} />,
   "service-robot": <CuteServiceBot size={60} />,

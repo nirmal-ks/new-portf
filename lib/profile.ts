@@ -9,7 +9,7 @@ export const SITE_URL =
 
 export const profile = {
   name: "Nirmal Saravanan",
-  title: "Robotics, Embedded & Full Stack Engineer",
+  title: "AI, Robotics, Embedded & Full Stack Engineer",
   location: "Chennai, Tamil Nadu, India",
   email: "nirmal.saravanan.dev@gmail.com",
   phone: "+91 8610680721",
@@ -18,8 +18,8 @@ export const profile = {
   linkedin: "https://www.linkedin.com/in/nirmal-saravanan-7520a8230/",
   careerStart: "2021-11-01",
   summary:
-    "Multidisciplinary engineer working across autonomous robotics, embedded IoT systems and scalable web platforms. Programs Unitree quadruped robots, builds ROS 2 SLAM navigation stacks for service robots, designs Raspberry Pi / STM32 edge controllers, and ships high-traffic Next.js / TypeScript products to production.",
-  openTo: ["Full-time engineering roles", "Autonomous robotics projects", "Embedded hardware consulting", "Contract / freelance builds"],
+    "Multidisciplinary engineer building across AI, robotics, embedded systems and full-stack software. Ships Generative AI and agentic AI products (AI mock-interview platform, AI code conversion) on Python, FastAPI and Django; programs Unitree quadruped robots and ROS 2 SLAM navigation stacks; designs Raspberry Pi / STM32 edge controllers and KiCad PCBs; and delivers production web apps, Flutter apps and Windows desktop software end to end.",
+  openTo: ["Full-time engineering roles", "AI / GenAI product builds", "Autonomous robotics projects", "Embedded hardware consulting", "Contract / freelance builds"],
 };
 
 export type Experience = {
@@ -72,7 +72,7 @@ export const experiences: Experience[] = [
   },
 ];
 
-export type ProjectCategory = "robotics" | "embedded" | "web";
+export type ProjectCategory = "ai" | "robotics" | "embedded" | "web";
 
 export type Project = {
   id: string;
@@ -86,12 +86,58 @@ export type Project = {
 
 export const PROJECT_FILTERS: { id: "all" | ProjectCategory; label: string }[] = [
   { id: "all", label: "All Systems" },
+  { id: "ai", label: "AI & GenAI" },
   { id: "robotics", label: "Robotics" },
   { id: "embedded", label: "Embedded & IoT" },
   { id: "web", label: "Web & 3D" },
 ];
 
 export const projects: Project[] = [
+  {
+    id: "ai-interview",
+    title: "AI Mock Interview Platform",
+    status: "Generative AI // Full Stack Product",
+    category: "ai",
+    desc: "Built a full-stack AI mock-interview platform that generates role-specific interview questions, runs the interview session, and evaluates candidate answers with LLM-generated feedback so learners can practise and improve before real interviews.",
+    highlights: ["Role-specific question generation with LLMs", "AI answer evaluation & feedback reports", "End-to-end full-stack build"],
+    tech: ["Python", "FastAPI", "Generative AI", "LLM APIs", "React", "PostgreSQL"],
+  },
+  {
+    id: "ai-code-conversion",
+    title: "AI Code Conversion Engine",
+    status: "Generative AI // Developer Tooling",
+    category: "ai",
+    desc: "Engineered an AI-powered tool that converts source code between programming languages and frameworks using large language models, with an agentic workflow that analyses the input code, converts it and reviews the output.",
+    highlights: ["LLM-driven code translation", "Agentic analyse → convert → review workflow", "Web interface for developers"],
+    tech: ["Python", "FastAPI", "Agentic AI", "LLM APIs", "Next.js", "TypeScript"],
+  },
+  {
+    id: "ai-cork",
+    title: "AI Cork — Flutter App & Windows Desktop Software",
+    status: "AI Application // Mobile + Desktop",
+    category: "ai",
+    desc: "Developed AI Cork as a cross-platform product: a Flutter mobile app plus a packaged Windows desktop application (.exe), both connected to an AI-enabled Python backend.",
+    highlights: ["Flutter cross-platform mobile app", "Packaged Windows desktop build (.exe)", "AI features served from a Python backend"],
+    tech: ["Flutter", "Dart", "Python", "Generative AI", "Windows Desktop"],
+  },
+  {
+    id: "kicad-pcb-ai",
+    title: "AI-Assisted PCB Design with KiCad",
+    status: "Hardware Design // AI Tooling",
+    category: "embedded",
+    desc: "Designed printed circuit boards in KiCad and built an AI-assisted workflow around the PCB design process, combining schematic capture and board layout with Python automation and AI.",
+    highlights: ["Schematic capture & PCB layout in KiCad", "AI-assisted design workflow", "Python automation for hardware design"],
+    tech: ["KiCad", "PCB Design", "Python", "Generative AI", "Embedded Hardware"],
+  },
+  {
+    id: "mqtt-recorder",
+    title: "MQTT Automatic Recording Software",
+    status: "Industrial IoT // Windows Desktop",
+    category: "embedded",
+    desc: "Built a Windows desktop application (.exe) that subscribes to MQTT device streams and automatically records the incoming data, giving teams a hands-free log of IoT and machine telemetry.",
+    highlights: ["Automatic recording of MQTT topics", "Packaged Windows desktop app (.exe)", "Reliable IoT telemetry logging"],
+    tech: ["Python", "MQTT", "Windows Desktop", "IoT"],
+  },
   {
     id: "unitree",
     title: "Unitree Quadruped Dog Robot Control",
@@ -167,10 +213,11 @@ export const projects: Project[] = [
 ];
 
 export const skillGroups: { category: string; items: string[] }[] = [
-  { category: "Robotics & Autonomy", items: ["ROS 2", "SLAM (Cartographer / Nav2)", "LiDAR Fusion", "OpenCV", "Unitree SDK", "Reinforcement Learning", "Gazebo", "Path Planning"] },
-  { category: "Embedded & IoT", items: ["Raspberry Pi", "Arduino", "STM32", "MQTT", "Modbus", "I2C / SPI / UART", "Sensor Fusion", "TensorFlow Lite"] },
-  { category: "Languages & Frameworks", items: ["Python", "C++", "TypeScript", "JavaScript", "Next.js", "React", "Node.js", "FastAPI", "Express", "Angular"] },
-  { category: "Backend, AI & Data", items: ["AI Agents", "Generative AI APIs", "WebSockets", "REST", "PostgreSQL", "MySQL", "Redis", "Microservices"] },
+  { category: "AI & Generative AI", items: ["Generative AI", "Agentic AI", "AI Agents", "LLM APIs", "Prompt Engineering", "AI Code Conversion", "Computer Vision", "Reinforcement Learning"] },
+  { category: "Languages & Frameworks", items: ["Python", "FastAPI", "Django", "C++", "TypeScript", "JavaScript", "Next.js", "React", "Node.js", "Express", "Angular", "Flutter / Dart"] },
+  { category: "Robotics & Autonomy", items: ["ROS 2", "SLAM (Cartographer / Nav2)", "LiDAR Fusion", "OpenCV", "Unitree SDK", "Gazebo", "Path Planning"] },
+  { category: "Embedded, IoT & Hardware", items: ["Raspberry Pi", "Arduino", "STM32", "MQTT", "Modbus", "I2C / SPI / UART", "Sensor Fusion", "TensorFlow Lite", "KiCad PCB Design"] },
+  { category: "Backend, Data & Apps", items: ["REST APIs", "WebSockets", "Microservices", "PostgreSQL", "MySQL", "Redis", "Windows Desktop Apps (.exe)", "Cross-platform Mobile Apps"] },
   { category: "3D & Interfaces", items: ["Three.js", "WebGL / GLSL", "React Three Fiber", "Babylon.js", "Tailwind CSS", "Framer Motion"] },
   { category: "DevOps & Tools", items: ["Docker", "Linux", "Git / GitHub Actions", "AWS", "Postman", "Oscilloscopes & Logic Analyzers", "Figma", "Agile/Scrum"] },
 ];

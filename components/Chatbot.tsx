@@ -97,6 +97,11 @@ const NIRMAL_DATA = {
   ],
 
   projects: [
+    { title: "AI Mock Interview Platform", tech: ["Python", "FastAPI", "Generative AI", "React"], type: "ai" },
+    { title: "AI Code Conversion Engine", tech: ["Python", "FastAPI", "Agentic AI", "Next.js"], type: "ai" },
+    { title: "AI Cork — Flutter App & Windows .exe", tech: ["Flutter", "Dart", "Python", "Generative AI"], type: "ai" },
+    { title: "AI-Assisted PCB Design (KiCad)", tech: ["KiCad", "PCB Design", "Python"], type: "embedded" },
+    { title: "MQTT Automatic Recording Software", tech: ["Python", "MQTT", "Windows Desktop"], type: "embedded" },
     { title: "Unitree Quadruped Dog Robot Control", tech: ["Python", "C++", "Unitree SDK", "PyTorch", "ROS 2"], type: "robotics" },
     { title: "Rex Robot — Autonomous Navigation", tech: ["ROS 2", "Python", "C++", "LiDAR", "OpenCV"], type: "robotics" },
     { title: "AI Service Robot Platform", tech: ["ROS 2", "Python", "TensorFlow", "WebSockets", "FastAPI"], type: "robotics" },
@@ -339,6 +344,7 @@ function ExperienceResponse({ intro }: { intro: string }) {
 // ── Projects Response ──
 function ProjectsResponse({ intro }: { intro: string }) {
   const typeColors: Record<string, string> = {
+    ai: "#a78bfa",
     robotics: "var(--arc-cyan)",
     embedded: "var(--stark-gold)",
     web: "var(--crimson-primary)",
@@ -361,7 +367,7 @@ function ProjectsResponse({ intro }: { intro: string }) {
             transition={{ delay: 0.9 + i * 0.1, type: "spring", stiffness: 200, damping: 18 }}
           >
             <div className="chatbot-project-type" style={{ color: typeColors[proj.type] || "#fff" }}>
-              {proj.type === "robotics" ? <Bot size={12} /> : proj.type === "embedded" ? <Cpu size={12} /> : <Globe size={12} />}
+              {proj.type === "ai" ? <Sparkles size={12} /> : proj.type === "robotics" ? <Bot size={12} /> : proj.type === "embedded" ? <Cpu size={12} /> : <Globe size={12} />}
               <span>{proj.type.toUpperCase()}</span>
             </div>
             <div className="chatbot-project-title">{proj.title}</div>
@@ -492,7 +498,10 @@ export default function Chatbot() {
     }
   }, [isOpen]);
 
-  const processMessage = useCallback((text: string) => {
+  // Conversation so far, sent to the AI so follow-ups ("innum sollu") make sense
+  const historyRef = useRef<{ role: "user" | "bot"; text: string }[]>([]);
+
+  const processMessage = useCallback(async (text: string) => {
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: "user",
@@ -502,14 +511,39 @@ export default function Chatbot() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsTyping(true);
+    const started = Date.now();
 
-    // Simulate JARVIS "processing" delay
-    const delay = 800 + Math.random() * 600;
+    // The offline brain always runs: it drives the side bots' reactions, the
+    // visitor-name memory, and is the answer whenever the AI is unavailable
+    const { visitorName, scan } = getBrain();
+    let reply = think(text, { visitorName, scan });
+    if (reply.name) emit({ type: "chat:name", name: reply.name });
+    if (!["name", "greeting", "thanks", "bye"].includes(reply.topic)) emit({ type: "chat:asked", topic: reply.topic });
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          history: historyRef.current,
+          visitor: { name: reply.name ?? visitorName ?? undefined, ...scan },
+        }),
+      });
+      if (res.ok) {
+        const ai: { text?: string; card?: Reply["intent"] } = await res.json();
+        // Cards only for clearly professional questions, even if the AI suggests one
+        if (ai.text) reply = { ...reply, text: ai.text, intent: reply.intent ? ai.card ?? reply.intent : undefined };
+      }
+    } catch {
+      // offline reply already in hand
+    }
+
+    historyRef.current = [...historyRef.current, { role: "user" as const, text }, { role: "bot" as const, text: reply.text }].slice(-10);
+
+    // Keep a short "analyzing" beat even when the answer is instant
+    const wait = Math.max(0, 700 - (Date.now() - started));
     setTimeout(() => {
-      const { visitorName, scan } = getBrain();
-      const reply = think(text, { visitorName, scan });
-      if (reply.name) emit({ type: "chat:name", name: reply.name });
-      if (!["name", "greeting", "thanks", "bye"].includes(reply.topic)) emit({ type: "chat:asked", topic: reply.topic });
       const botMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
         sender: "bot",
@@ -520,7 +554,7 @@ export default function Chatbot() {
       setIsTyping(false);
       setGlowPulse(true);
       setTimeout(() => setGlowPulse(false), 1200);
-    }, delay);
+    }, wait);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

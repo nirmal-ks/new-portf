@@ -577,6 +577,19 @@ export function think(raw: string, ctx: BrainContext = {}): Reply {
     if (score > 0 && (!best || score > best.score)) best = { topic, score };
   }
 
+  // The generic "about" card only wins when nothing more specific matched:
+  // "nirmal personality pathi sollu" is about his personality, not his CV
+  if (best?.topic.id === "about") {
+    let specific: { topic: Topic; score: number } | null = null;
+    for (const { topic, keys } of NORMALIZED) {
+      if (topic.id === "about") continue;
+      let score = 0;
+      for (const k of keys) score += keyHits(q, tokens, k);
+      if (score > 0 && (!specific || score > specific.score)) specific = { topic, score };
+    }
+    if (specific) best = specific;
+  }
+
   // "innum sollu" / "tell me more" → another variant of the previous topic
   const wantsMore = tokens.length <= 4 && MORE.some((m) => tokens.includes(m) || q === m);
   if ((!best || best.score < 1) && wantsMore && lastTopic) {

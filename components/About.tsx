@@ -9,7 +9,8 @@ import { CuteDogBot, CuteDumEBot, CuteIronBot, CuteDroneBot, RoboticsSquadBar } 
 export default function About() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.15,
+    threshold: 0,
+    rootMargin: "0px 0px -60px 0px",
   });
 
   return (
@@ -114,13 +115,13 @@ export default function About() {
             </h3>
             
             <p>
-              I am a multidisciplinary engineer operating at the convergence of **Robotics, Embedded IoT Systems, and Scalable Web Architectures**. With over 4 years of experience, I develop autonomous robotic platforms, smart office automation systems, and high-concurrency cloud applications.
+              I am a multidisciplinary engineer operating at the convergence of <strong>Robotics, Embedded IoT Systems, and Scalable Web Architectures</strong>. With over 4 years of experience, I develop autonomous robotic platforms, smart office automation systems, and high-concurrency cloud applications.
             </p>
             <p>
-              My hardware & robotics repertoire includes programming **Unitree quadruped dog robots** (locomotion gaits & reinforcement learning), architecting navigation and SLAM stacks for **Rex Robot** & service bots with **ROS 2 & LiDAR**, and designing embedded edge-AI controllers with Raspberry Pi, STM32, and TensorFlow Lite.
+              My hardware & robotics repertoire includes programming <strong>Unitree quadruped dog robots</strong> (locomotion gaits & reinforcement learning), architecting navigation and SLAM stacks for <strong>Rex Robot</strong> & service bots with <strong>ROS 2 & LiDAR</strong>, and designing embedded edge-AI controllers with Raspberry Pi, STM32, and TensorFlow Lite.
             </p>
             <p>
-              On the software frontier, I build hyper-performant **Next.js/TypeScript** platforms, real-time WebSocket telemetry engines, and high-efficiency API microservices built to withstand massive enterprise concurrency.
+              On the software frontier, I build hyper-performant <strong>Next.js/TypeScript</strong> platforms, real-time WebSocket telemetry engines, and high-efficiency API microservices built to withstand massive enterprise concurrency.
             </p>
 
             {/* Stat Cards with Iron Man Theme */}

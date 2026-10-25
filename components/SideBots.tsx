@@ -5,11 +5,12 @@ import {
   motion, AnimatePresence, useScroll, useSpring, useTransform, useVelocity,
   useMotionValue, useMotionValueEvent, useReducedMotion, useAnimationControls,
 } from "framer-motion";
+import { getBrain, onBrainEvent, type BrainEvent, type VisitorScan } from "@/lib/botBrain";
 
 // Side gutters only exist when the viewport is wider than the 1200px container + room for a bot
 const WIDE_QUERY = "(min-width: 1440px)";
 
-function useWideScreen() {
+export function useWideScreen() {
   return useSyncExternalStore(
     (cb) => {
       const m = window.matchMedia(WIDE_QUERY);
@@ -30,6 +31,65 @@ const SECTIONS: { id: string; label: string; line: string }[] = [
   { id: "skills", label: "Expertise", line: "POWER LEVELS 💪" },
   { id: "contact", label: "Contact", line: "HIRE HIM! 🚀" },
 ];
+
+// Lines the rappel bot shouts when something happens in JARVIS
+const TOPIC_LINES: Record<string, string> = {
+  food: "CHICKEN + VEG ONLY 🍗🥗",
+  private: "CLASSIFIED 🔒",
+  hobbies: "TREKKING MODE ⛰️",
+  hire: "HIRE HIM! 🚀",
+  projects: "WE BUILT THESE 🤖",
+  joke: "HAHAHA 😂",
+  zodiac: "SCORPIO POWER ♏",
+  personality: "STARK MODE ⚡",
+  cando: "NOTHING IMPOSSIBLE 💪",
+  helping: "BIG HEART ❤️",
+  native: "MADHURANTHAKAM 📍",
+  fitness: "SPORTY BOSS 🏃",
+  whoami: "DRONE KNOWS 🛸",
+  unknown: "HMM… 🤔",
+};
+
+function reactionFor(e: BrainEvent): string | null {
+  if (e.type === "chat:open") return "ASK JARVIS! 💬";
+  if (e.type === "chat:name") return `HI ${e.name.toUpperCase()}! 👋`;
+  if (e.type === "chat:asked") return TOPIC_LINES[e.topic] ?? null;
+  return null;
+}
+
+// What the drone says once the visitor scan lands
+export function welcomeLine(s: VisitorScan) {
+  const who = [s.company, s.city].filter(Boolean).join(", ");
+  return who ? `WELCOME ${who.toUpperCase()}! 👋` : "WELCOME, VISITOR! 👋";
+}
+
+function scanLines(s: VisitorScan): string[] {
+  const lines = ["SCAN COMPLETE ✅", welcomeLine(s)];
+  if (s.source && s.source !== "Direct") lines.push(`VIA ${s.source.toUpperCase()}? NICE 🔗`);
+  if (s.visitCount > 1) lines.push(`WELCOME BACK! VISIT #${s.visitCount} 🔁`);
+  return lines;
+}
+
+// Both bots doze off when the visitor stops moving
+const IDLE_MS = 25000;
+function useIdle(ms: number) {
+  const [idle, setIdle] = useState(false);
+  useEffect(() => {
+    let t = setTimeout(() => setIdle(true), ms);
+    const wake = () => {
+      clearTimeout(t);
+      setIdle(false);
+      t = setTimeout(() => setIdle(true), ms);
+    };
+    const events = ["mousemove", "scroll", "keydown", "touchstart", "click"] as const;
+    events.forEach((ev) => window.addEventListener(ev, wake, { passive: true }));
+    return () => {
+      clearTimeout(t);
+      events.forEach((ev) => window.removeEventListener(ev, wake));
+    };
+  }, [ms]);
+  return idle;
+}
 
 export default function SideBots() {
   const wide = useWideScreen();
@@ -60,6 +120,7 @@ function RappelBot() {
   const [active, setActive] = useState("home");
   const [bubble, setBubble] = useState<string | null>(null);
   const [markers, setMarkers] = useState<{ id: string; label: string; at: number }[]>([]);
+  const idle = useIdle(IDLE_MS);
 
   const modeRef = useRef(mode);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -85,6 +146,12 @@ function RappelBot() {
   });
 
   useEffect(() => clearTimers, []);
+
+  // React to what's happening in JARVIS
+  useEffect(() => onBrainEvent((e) => {
+    const line = reactionFor(e);
+    if (line) setBubble(line);
+  }), []);
 
   // Track the section in view → speech bubble
   useEffect(() => {
@@ -158,15 +225,15 @@ function RappelBot() {
 
         <motion.div className="sidebot-hanger" style={{ top: pct }}>
           <AnimatePresence>
-            {(bubble || waving) && (
+            {(bubble || waving || idle) && (
               <motion.div
-                key={waving ? "wave" : bubble}
+                key={idle ? "sleep" : waving ? "wave" : bubble}
                 className="sidebot-bubble"
                 initial={{ opacity: 0, y: 6, scale: 0.8 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
               >
-                {waving ? "SCROLL ON! 👋" : bubble}
+                {idle ? "Zzz… 😴" : waving ? "SCROLL ON! 👋" : bubble}
               </motion.div>
             )}
           </AnimatePresence>
@@ -300,7 +367,10 @@ function ScoutDrone() {
 
   const [locked, setLocked] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [say, setSay] = useState<string | null>(null);
+  const idle = useIdle(IDLE_MS);
   const lockedRef = useRef(false);
+  const sayTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const scanningRef = useRef(false);
 
   const scan = () => {
@@ -344,13 +414,40 @@ function ScoutDrone() {
     };
   }, [targetY, pupilX, pupilY]);
 
+  // Speak a sequence of lines, one after another
+  const speak = (lines: string[], each = 2600) => {
+    sayTimers.current.forEach(clearTimeout);
+    sayTimers.current = lines.map((l, i) => setTimeout(() => setSay(l), i * each));
+    sayTimers.current.push(setTimeout(() => setSay(null), lines.length * each));
+  };
+
+  // Greet the visitor as soon as the scan comes back (or right away if it already did)
+  useEffect(() => {
+    const greet = (s: VisitorScan) => {
+      scan();
+      speak(["SCANNING VISITOR… 📡", ...scanLines(s)]);
+    };
+    const early = setTimeout(() => {
+      const s = getBrain().scan;
+      if (s) greet(s);
+    }, 0);
+    const off = onBrainEvent((e) => e.type === "visitor:scanned" && greet(e.scan));
+    return () => {
+      clearTimeout(early);
+      off();
+      sayTimers.current.forEach(clearTimeout);
+    };
+  }, []);
+
   const onClick = async () => {
     scan();
+    const s = getBrain().scan;
+    if (s) speak([scanLines(s)[Math.floor(Math.random() * scanLines(s).length)]]);
     await roll.start({ rotate: [0, -360], scale: [1, 1.15, 1], transition: { duration: 0.8, ease: "easeInOut" } });
     roll.set({ rotate: 0 });
   };
 
-  const bubble = scanning ? "SCANNING… 📡" : locked ? "TARGET LOCKED 🎯" : null;
+  const bubble = say ?? (idle ? "Zzz… 💤" : scanning ? "SCANNING… 📡" : locked ? "TARGET LOCKED 🎯" : null);
 
   return (
     <motion.div className="sidebot-drone" style={{ y }}>

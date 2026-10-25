@@ -5,9 +5,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import {
   X, Send, Bot, Cpu, Zap, Briefcase, Code2,
   Mail, MapPin, Phone, User, Sparkles,
-  Terminal, Globe, Activity, Shield
+  Terminal, Globe, Activity, Shield, Heart
 } from "lucide-react";
 import { CuteIronBot } from "./Robots";
+import { think, type Reply } from "@/lib/nirmal-brain";
+import { emit, getBrain, useBrain } from "@/lib/botBrain";
 
 // ═══════════════════════════════════════════════════════════════
 // NIRMAL'S KNOWLEDGE BASE — All portfolio data for JARVIS
@@ -107,41 +109,15 @@ const NIRMAL_DATA = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// INTENT DETECTION — Match user queries to categories
+// MESSAGES — replies come from the offline brain in lib/nirmal-brain.ts
 // ═══════════════════════════════════════════════════════════════
-
-type Intent = "greeting" | "about" | "skills" | "experience" | "projects" | "contact" | "unknown";
 
 interface ChatMessage {
   id: string;
   sender: "user" | "bot";
   text?: string;
-  intent?: Intent;
+  reply?: Reply;
   timestamp: number;
-}
-
-function detectIntent(query: string): Intent {
-  const q = query.toLowerCase().trim();
-
-  const greetingWords = ["hi", "hello", "hey", "yo", "da", "vanakkam", "sup", "what's up", "howdy", "namaste", "hola"];
-  if (greetingWords.some((w) => q === w || q.startsWith(w + " ") || q.startsWith(w + "!"))) return "greeting";
-
-  const skillWords = ["skill", "tech", "technology", "stack", "tools", "programming", "language", "framework", "ros", "python", "c++", "react", "robot", "embedded", "iot", "what can you do", "what do you know", "expertise", "proficien", "calibration"];
-  if (skillWords.some((w) => q.includes(w))) return "skills";
-
-  const expWords = ["experience", "work", "career", "job", "company", "employment", "where did you work", "work history", "timeline", "xmedia", "adani", "grovita", "previous", "current role"];
-  if (expWords.some((w) => q.includes(w))) return "experience";
-
-  const projWords = ["project", "portfolio", "built", "made", "develop", "create", "unitree", "rex robot", "service robot", "smart office", "3d configurator", "ups monitor", "dinamani", "appy rover", "what have you built", "work sample"];
-  if (projWords.some((w) => q.includes(w))) return "projects";
-
-  const contactWords = ["contact", "reach", "email", "phone", "number", "mail", "call", "hire", "connect", "linkedin", "github", "social", "get in touch", "message", "available"];
-  if (contactWords.some((w) => q.includes(w))) return "contact";
-
-  const aboutWords = ["about", "who", "yourself", "name", "introduce", "tell me about", "bio", "background", "location", "where are you", "chennai", "nirmal", "saravanan", "describe"];
-  if (aboutWords.some((w) => q.includes(w))) return "about";
-
-  return "unknown";
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -211,8 +187,8 @@ function TypewriterText({ text }: { text: string }) {
   );
 }
 
-// ── Greeting Response ──
-function GreetingResponse() {
+// ── Plain text reply (personal, meta, greetings) ──
+function TextResponse({ text }: { text: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -220,13 +196,13 @@ function GreetingResponse() {
       transition={{ duration: 0.4 }}
       className="chatbot-response-block"
     >
-      <TypewriterText text="Hello! I'm JARVIS, Nirmal Saravanan's AI assistant. 🤖⚡ I know everything about his skills, experience, projects, and how to reach him. Ask me anything or use the quick actions below!" />
+      <TypewriterText text={text} />
     </motion.div>
   );
 }
 
 // ── About Response ──
-function AboutResponse() {
+function AboutResponse({ intro }: { intro: string }) {
   const stats = [
     { icon: <Shield size={14} />, label: "Experience", value: "4+ Yrs" },
     { icon: <Bot size={14} />, label: "Specialization", value: "Robotics & AI" },
@@ -240,7 +216,7 @@ function AboutResponse() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <TypewriterText text={`${NIRMAL_DATA.name} — ${NIRMAL_DATA.title}. ${NIRMAL_DATA.summary}`} />
+      <TypewriterText text={`${intro} ${NIRMAL_DATA.summary}`} />
       <div className="chatbot-stats-grid">
         {stats.map((s, i) => (
           <motion.div
@@ -263,14 +239,14 @@ function AboutResponse() {
 }
 
 // ── Skills Response ──
-function SkillsResponse() {
+function SkillsResponse({ intro }: { intro: string }) {
   return (
     <motion.div
       className="chatbot-response-block"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <TypewriterText text="Here's Nirmal's complete technical arsenal — calibrated and battle-tested:" />
+      <TypewriterText text={intro} />
       <div className="chatbot-skills-container">
         {NIRMAL_DATA.skills.map((group, gi) => (
           <motion.div
@@ -313,14 +289,14 @@ function SkillsResponse() {
 }
 
 // ── Experience Response ──
-function ExperienceResponse() {
+function ExperienceResponse({ intro }: { intro: string }) {
   return (
     <motion.div
       className="chatbot-response-block"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <TypewriterText text="Nirmal's engineering career timeline — from intern to robotics lead:" />
+      <TypewriterText text={intro} />
       <div className="chatbot-exp-container">
         {NIRMAL_DATA.experience.map((exp, i) => (
           <motion.div
@@ -361,7 +337,7 @@ function ExperienceResponse() {
 }
 
 // ── Projects Response ──
-function ProjectsResponse() {
+function ProjectsResponse({ intro }: { intro: string }) {
   const typeColors: Record<string, string> = {
     robotics: "var(--arc-cyan)",
     embedded: "var(--stark-gold)",
@@ -374,7 +350,7 @@ function ProjectsResponse() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <TypewriterText text="Nirmal's project schematics — robotics, embedded, and web platforms:" />
+      <TypewriterText text={intro} />
       <div className="chatbot-projects-grid">
         {NIRMAL_DATA.projects.map((proj, i) => (
           <motion.div
@@ -410,7 +386,7 @@ function ProjectsResponse() {
 }
 
 // ── Contact Response ──
-function ContactResponse() {
+function ContactResponse({ intro }: { intro: string }) {
   const contacts = [
     { icon: <Mail size={16} />, label: "Email", value: NIRMAL_DATA.email, href: `mailto:${NIRMAL_DATA.email}` },
     { icon: <Phone size={16} />, label: "Phone", value: NIRMAL_DATA.phone, href: `tel:${NIRMAL_DATA.phone.replace(/\s/g, "")}` },
@@ -423,7 +399,7 @@ function ContactResponse() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <TypewriterText text="Secure communication channels for reaching Nirmal:" />
+      <TypewriterText text={intro} />
       <div className="chatbot-contact-cards">
         {contacts.map((c, i) => (
           <motion.a
@@ -468,29 +444,15 @@ function ContactResponse() {
   );
 }
 
-// ── Unknown / Fallback Response ──
-function UnknownResponse() {
-  return (
-    <motion.div
-      className="chatbot-response-block"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <TypewriterText text="I'm not quite sure what you're looking for. Try asking about Nirmal's skills, experience, projects, or contact info! You can also use the quick actions below. 👇" />
-    </motion.div>
-  );
-}
-
-// Map intents to response components
-function BotResponse({ intent }: { intent: Intent }) {
-  switch (intent) {
-    case "greeting": return <GreetingResponse />;
-    case "about": return <AboutResponse />;
-    case "skills": return <SkillsResponse />;
-    case "experience": return <ExperienceResponse />;
-    case "projects": return <ProjectsResponse />;
-    case "contact": return <ContactResponse />;
-    default: return <UnknownResponse />;
+// Professional topics get their rich card; everything else is text
+function BotResponse({ reply }: { reply: Reply }) {
+  switch (reply.intent) {
+    case "about": return <AboutResponse intro={reply.text} />;
+    case "skills": return <SkillsResponse intro={reply.text} />;
+    case "experience": return <ExperienceResponse intro={reply.text} />;
+    case "projects": return <ProjectsResponse intro={reply.text} />;
+    case "contact": return <ContactResponse intro={reply.text} />;
+    default: return <TextResponse text={reply.text} />;
   }
 }
 
@@ -498,12 +460,13 @@ function BotResponse({ intent }: { intent: Intent }) {
 // MAIN CHATBOT COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
-const QUICK_ACTIONS: { label: string; icon: React.ReactNode; intent: Intent; query: string }[] = [
-  { label: "About", icon: <User size={13} />, intent: "about", query: "Tell me about Nirmal" },
-  { label: "Skills", icon: <Code2 size={13} />, intent: "skills", query: "What are your skills?" },
-  { label: "Experience", icon: <Briefcase size={13} />, intent: "experience", query: "Show your experience" },
-  { label: "Projects", icon: <Terminal size={13} />, intent: "projects", query: "What projects have you built?" },
-  { label: "Contact", icon: <Mail size={13} />, intent: "contact", query: "How to contact you?" },
+const QUICK_ACTIONS: { label: string; icon: React.ReactNode; query: string }[] = [
+  { label: "About", icon: <User size={13} />, query: "Tell me about Nirmal" },
+  { label: "Personal", icon: <Heart size={13} />, query: "Nirmal eppadi patta aalu?" },
+  { label: "Skills", icon: <Code2 size={13} />, query: "What are his skills?" },
+  { label: "Experience", icon: <Briefcase size={13} />, query: "Show his experience" },
+  { label: "Projects", icon: <Terminal size={13} />, query: "What projects has he built?" },
+  { label: "Contact", icon: <Mail size={13} />, query: "How to contact him?" },
 ];
 
 export default function Chatbot() {
@@ -513,6 +476,7 @@ export default function Chatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [glowPulse, setGlowPulse] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scan = useBrain((s) => s.scan);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Scroll to bottom on new messages
@@ -520,9 +484,10 @@ export default function Chatbot() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  // Focus input when opened
+  // Focus input when opened, and let the other bots know
   useEffect(() => {
     if (isOpen) {
+      emit({ type: "chat:open" });
       setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen]);
@@ -541,11 +506,14 @@ export default function Chatbot() {
     // Simulate JARVIS "processing" delay
     const delay = 800 + Math.random() * 600;
     setTimeout(() => {
-      const intent = detectIntent(text);
+      const { visitorName, scan } = getBrain();
+      const reply = think(text, { visitorName, scan });
+      if (reply.name) emit({ type: "chat:name", name: reply.name });
+      if (!["name", "greeting", "thanks", "bye"].includes(reply.topic)) emit({ type: "chat:asked", topic: reply.topic });
       const botMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
         sender: "bot",
-        intent,
+        reply,
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, botMsg]);
@@ -663,8 +631,15 @@ export default function Chatbot() {
                     Welcome, I&apos;m <span style={{ color: "var(--stark-gold)" }}>JARVIS</span> — Nirmal&apos;s AI assistant.
                   </div>
                   <div className="chatbot-welcome-hint">
-                    Ask me anything about his skills, experience, projects, or how to contact him!
+                    Ask me anything about his work or his personal side, in English or Tanglish!
                   </div>
+                  {(scan?.city || scan?.country) && (
+                    <div className="chatbot-welcome-hint chatbot-scan-hint">
+                      📡 Drone scan: {[scan.company, scan.city, scan.country].filter(Boolean).join(", ")} visitor
+                      {scan.source && scan.source !== "Direct" ? ` via ${scan.source}` : ""}
+                      {scan.visitCount > 1 ? ` · visit #${scan.visitCount}` : ""}. Welcome! 👋
+                    </div>
+                  )}
                 </motion.div>
               )}
 
@@ -683,7 +658,7 @@ export default function Chatbot() {
                     </div>
                   ) : (
                     <div className="chatbot-msg-bubble-bot">
-                      <BotResponse intent={msg.intent!} />
+                      <BotResponse reply={msg.reply!} />
                     </div>
                   )}
                 </motion.div>

@@ -38,7 +38,12 @@ export default function Footer() {
       </div>
 
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} {profile.name} · Built with Next.js, TypeScript & Framer Motion</span>
+        <span>
+          © {new Date().getFullYear()} {profile.name} · Built with Next.js, TypeScript & Framer Motion
+          <span className="footer-privacy">
+            🛸 Privacy: this site logs approximate city, network, device and referrer for visit stats. No names, emails or cookies for ads.
+          </span>
+        </span>
         <button className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">
           <ArrowUp size={16} /> Top
         </button>

@@ -153,7 +153,7 @@ export function RealtimeExperienceDashboard() {
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span className="logo-reactor" style={{ width: "18px", height: "18px" }} />
           <div>
-            <h3 style={{ margin: 0, fontSize: "1.3rem", color: "var(--stark-gold-bright)" }}>
+            <h3 className="telemetry-title">
               STARK TIME-MATRIX // LIVE CAREER EXPERIENCE CLOCK
             </h3>
             <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
@@ -171,7 +171,7 @@ export function RealtimeExperienceDashboard() {
       </div>
 
       {/* Live Chronometer Clock Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div className="clock-grid">
         <div className="clock-card">
           <div className="clock-number">{exp.years}</div>
           <div className="clock-label">YEARS</div>
@@ -209,7 +209,7 @@ export function RealtimeExperienceDashboard() {
       </div>
 
       {/* Live Milestone Progress Trackers */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.2rem" }}>
+      <div className="milestone-grid">
         {/* Role 1: XMedia Solution */}
         <div className="telemetry-milestone-box active-milestone">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>

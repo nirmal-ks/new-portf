@@ -10,6 +10,8 @@ import Chatbot from "@/components/Chatbot";
 import CommandPalette from "@/components/CommandPalette";
 import Footer from "@/components/Footer";
 import SideBots from "@/components/SideBots";
+import VisitorTracker from "@/components/VisitorTracker";
+import ScanToast from "@/components/ScanToast";
 
 export default function Home() {
   return (
@@ -30,6 +32,9 @@ export default function Home() {
       <CommandPalette />
       {/* Animated robots living in the side gutters on wide screens */}
       <SideBots />
+      {/* Drone scan: visitor intel → WhatsApp + email alerts */}
+      <VisitorTracker />
+      <ScanToast />
       <Footer />
     </>
   );

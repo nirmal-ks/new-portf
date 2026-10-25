@@ -608,11 +608,11 @@ export function RoboticsSquadBar() {
   ];
 
   return (
-    <div className="robotics-squad-container glass-card" style={{ margin: "3.5rem 0", padding: "2rem" }}>
+    <div className="robotics-squad-container glass-card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.6rem", flexWrap: "wrap", gap: "0.8rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span className="logo-reactor" style={{ width: "16px", height: "16px" }} />
-          <h3 style={{ margin: 0, fontSize: "1.25rem", color: "var(--stark-gold)" }}>
+          <h3 className="squad-title">
             ⚡ STARK ALL-STAR ROBOTICS SQUAD // 10 ENGINEER UNITS ACTIVE
           </h3>
         </div>
@@ -629,7 +629,7 @@ export function RoboticsSquadBar() {
         </span>
       </div>
 
-      <div className="squad-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(135px, 1fr))", gap: "0.9rem" }}>
+      <div className="squad-grid">
         {squad.map((bot) => (
           <motion.div
             key={bot.id}

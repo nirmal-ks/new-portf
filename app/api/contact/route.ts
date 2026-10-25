@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { OWNER_EMAIL, sendEmail, sendWhatsApp } from "@/lib/notify";
 
 interface ContactRequestBody {
   name: string;
@@ -10,7 +11,7 @@ interface ContactRequestBody {
   website?: string; // honeypot
 }
 
-const TARGET_EMAIL = process.env.RECEIVER_EMAIL || "nirmal.saravanan.dev@gmail.com";
+const TARGET_EMAIL = OWNER_EMAIL;
 
 // Best-effort in-memory rate limit: 5 submissions per IP per 10 minutes.
 // (Per server instance — good enough to stop casual spam on a portfolio.)
@@ -115,69 +116,27 @@ To reply directly to the sender, contact: ${cleanEmail}
 =========================================
 `.trim();
 
-    let dispatchedVia = "none";
-    let isDelivered = false;
+    // 3. Email via Resend → Web3Forms (whichever is configured)
+    const provider = await sendEmail({
+      subject: emailSubject,
+      text: emailBodyText,
+      replyTo: cleanEmail,
+      fromName: `${cleanName} [${cleanCompany}]`,
+    });
+    const dispatchedVia = provider ?? "none";
+    const isDelivered = provider !== null;
 
-    // 3. Option A: Resend API (if configured)
-    if (process.env.RESEND_API_KEY) {
-      try {
-        const resendRes = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: "Portfolio Comms <onboarding@resend.dev>",
-            to: [TARGET_EMAIL],
-            reply_to: cleanEmail,
-            subject: emailSubject,
-            text: emailBodyText,
-          }),
-        });
+    // 4. WhatsApp ping, sent after the response so the form stays fast
+    after(() =>
+      sendWhatsApp(
+        `📨 *New portfolio message*
+👤 ${cleanName} (${cleanCompany})
+✉️ ${cleanEmail}
+🏷️ ${cleanRoleType}
 
-        if (resendRes.ok) {
-          dispatchedVia = "resend";
-          isDelivered = true;
-        } else {
-          const errData = await resendRes.json();
-          console.warn("[Contact API] Resend dispatch warning:", errData);
-        }
-      } catch (err) {
-        console.error("[Contact API] Resend error:", err);
-      }
-    }
-
-    // 4. Option B: Web3Forms API (if configured)
-    if (!isDelivered && process.env.WEB3FORMS_KEY) {
-      try {
-        const web3Res = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            access_key: process.env.WEB3FORMS_KEY,
-            to: TARGET_EMAIL,
-            from_name: `${cleanName} [${cleanCompany}]`,
-            email: cleanEmail,
-            subject: emailSubject,
-            message: emailBodyText,
-          }),
-        });
-
-        if (web3Res.ok) {
-          const web3Data = await web3Res.json();
-          if (web3Data.success) {
-            dispatchedVia = "web3forms";
-            isDelivered = true;
-          }
-        }
-      } catch (err) {
-        console.error("[Contact API] Web3Forms error:", err);
-      }
-    }
+${cleanMessage.slice(0, 600)}`
+      )
+    );
 
     // 5. Construct mailto fallback string
     const mailtoParams = new URLSearchParams({

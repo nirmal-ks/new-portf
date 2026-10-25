@@ -1704,6 +1704,15 @@ footer {
   line-height: 1.5;
 }
 
+.chatbot-scan-hint {
+  margin-top: 8px;
+  padding: 6px 10px;
+  color: var(--arc-cyan);
+  border: 1px dashed rgba(0, 240, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 240, 255, 0.05);
+}
+
 /* ── Message Bubbles ── */
 .chatbot-msg {
   display: flex;
@@ -3224,6 +3233,13 @@ kbd {
   margin-bottom: 0.3rem;
 }
 .footer-hint { font-size: 0.8rem; margin-top: 0.4rem; }
+.footer-privacy {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
 .footer-bottom {
   display: flex;
   justify-content: space-between;
@@ -3649,3 +3665,218 @@ kbd {
 /* Entrance animations start ±40px off-axis; clip so phones never get a sideways scroll (iOS ignores body overflow-x) */
 html, body { overflow-x: clip; }
 #main-content > section { overflow-x: clip; }
+
+/* ═════════════════════════════════════
+   EXPERIENCE TELEMETRY + ROBOT SQUAD
+═════════════════════════════════════ */
+.telemetry-title { margin: 0; font-size: 1.3rem; color: var(--stark-gold-bright); }
+
+.clock-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.clock-card {
+  padding: 0.85rem 0.6rem 0.7rem;
+  text-align: center;
+  background: rgba(18, 7, 12, 0.7);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 10px;
+  min-width: 0;
+}
+.clock-card-seconds { border-color: rgba(0, 240, 255, 0.35); }
+.clock-number {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+.clock-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin: 0.3rem 0 0.55rem;
+  white-space: nowrap;
+}
+.clock-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--stark-gold);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+  transition: width 0.4s ease;
+}
+
+.milestone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.2rem;
+}
+.telemetry-milestone-box {
+  padding: 0.9rem 1rem;
+  background: rgba(18, 7, 12, 0.6);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  border-radius: 10px;
+  min-width: 0;
+}
+.telemetry-milestone-box > div:first-child { gap: 0.6rem; align-items: flex-start !important; }
+.active-milestone { border-color: rgba(0, 240, 255, 0.35); }
+.live-tag {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--arc-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 5px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.progress-bar-wrap {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--arc-cyan), var(--stark-gold));
+}
+.pulse-bar { animation: pulseBar 1.8s ease-in-out infinite; }
+@keyframes pulseBar { 50% { opacity: 0.55; } }
+
+.robotics-squad-container { margin: 3.5rem 0; }
+.squad-title { margin: 0; font-size: 1.25rem; color: var(--stark-gold); }
+.squad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 0.9rem;
+}
+
+/* ═════════════════════════════════════
+   RESPONSIVE FIXES
+═════════════════════════════════════ */
+.photo-mode-btn { white-space: nowrap; }
+.project-content { padding: 0; }
+
+/* Laptop */
+@media (max-width: 1279px) {
+  .clock-number { font-size: 1.35rem; }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .projects-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.5rem; }
+  .clock-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 992px) {
+  section { padding: 5rem 0; }
+  .hero-role-line { justify-content: center !important; }
+  .hero-coder-bot { display: none !important; }
+  .timeline-robot { display: none; }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  section { padding: 3.5rem 0; }
+  .section-heading-row > :not(h2) { display: none !important; }
+
+  .photo-mode-buttons { width: 100%; }
+  .photo-mode-btn { flex: 1; padding: 0.35rem 0.3rem; font-size: 0.68rem; }
+
+  .robotics-squad-container { margin: 2.5rem 0; padding: 1.1rem; }
+  .robotics-squad-container > div:first-child > span { font-size: 0.68rem !important; }
+  .squad-title { font-size: 1rem; line-height: 1.35; }
+  .squad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+
+  .clock-grid { gap: 0.5rem; }
+  .clock-card { padding: 0.65rem 0.35rem 0.55rem; }
+  .clock-number { font-size: 1.2rem; }
+  .clock-label { font-size: 0.58rem; letter-spacing: 0.5px; }
+
+  .contact-wrapper { padding: 1.1rem; }
+  .contact-item { padding: 1rem; }
+  .uplink-terminal-card { margin-top: 1.75rem; }
+}
+
+@media (max-width: 399px) {
+  .clock-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .photo-mode-btn { font-size: 0.62rem; }
+}
+
+/* Narrow phones (≤479px): keep hero tiles and pills on tidy single lines */
+@media (max-width: 479px) {
+  .hero-telemetry-deck { gap: 0.5rem; }
+  .telemetry-card { flex-direction: column; justify-content: center; text-align: center; gap: 0.35rem; padding: 0.6rem 0.4rem; }
+  .telemetry-info { align-items: center; }
+  .badge-value { font-size: 0.85rem; white-space: nowrap; }
+  .badge-label { font-size: 0.62rem; white-space: nowrap; }
+  .badge-icon { width: 28px; height: 28px; }
+  .hero-greeting-pill { font-size: 0.62rem; letter-spacing: 0.5px; padding: 0.35rem 0.75rem; white-space: nowrap; }
+  .snapshot-eyebrow { letter-spacing: 1px; font-size: 0.66rem; }
+  .photo-selector-label { display: none; }
+}
+.about-text p strong { color: #ffffff; font-weight: 600; }
+@media (max-width: 479px) {
+  .about-hud-tag { font-size: 0.62rem; padding: 0.45rem 0.6rem; gap: 0.5rem; }
+  .about-hud-tag > span { white-space: nowrap; }
+}
+
+/* ── Drone scan toast (screens without the side bots) ── */
+.scan-toast {
+  position: fixed;
+  left: 16px;
+  bottom: 25px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px - 80px); /* keep clear of the JARVIS toggle */
+  padding: 8px 14px 8px 8px;
+  background: rgba(18, 6, 12, 0.96);
+  border: 1px solid var(--stark-gold);
+  border-radius: 14px;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.3);
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+.scan-toast-bot { flex: none; width: 46px; height: 46px; }
+.scan-toast-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.scan-toast-kicker { font-size: 0.62rem; color: var(--stark-gold); letter-spacing: 0.08em; }
+.scan-toast-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--arc-cyan);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scan-toast-sub { font-size: 0.66rem; color: var(--text-muted); }
+.scan-toast-bar {
+  position: relative;
+  display: block;
+  width: 150px;
+  max-width: 100%;
+  height: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+  background: rgba(0, 240, 255, 0.15);
+  border-radius: 2px;
+}
+.scan-toast-bar span {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--arc-cyan);
+  box-shadow: 0 0 8px var(--arc-cyan);
+  animation: scan-toast-sweep 0.8s ease-in-out infinite alternate;
+}
+@keyframes scan-toast-sweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@media (prefers-reduced-motion: reduce) { .scan-toast-bar span { animation: none; width: 100%; } }

@@ -23,7 +23,8 @@ const ROBOTS: Record<string, React.ReactNode> = {
 export default function Projects() {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.08,
+    threshold: 0,
+    rootMargin: "0px 0px -60px 0px",
   });
   const [filter, setFilter] = useState<"all" | ProjectCategory>("all");
   const [active, setActive] = useState<Project | null>(null);

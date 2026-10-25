@@ -77,7 +77,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "native",
-    keys: ["native", "born", "birth", "birthplace", "hometown", "home town", "village", "madhuranthakam", "maduranthakam", "kanchipuram", "kancheepuram", "grew up", "raised", "childhood", "oor", "ooru", "sontha ur", "sonda ur", "porandha", "pirandha", "valandha", "valarndha", "from where", "where is he from", "ஊர்"],
+    keys: ["native", "born", "birth", "birthplace", "hometown", "home town", "village", "madhuranthakam", "maduranthakam", "kanchipuram", "kancheepuram", "grew up", "raised", "childhood", "oor", "ooru", "where does he live", "where is he now", "enga irukaru", "enga irukar", "sontha ur", "sonda ur", "porandha", "pirandha", "valandha", "valarndha", "from where", "where is he from", "ஊர்"],
     en: [
       "Origin story 📍: Born in Madhuranthakam, Kanchipuram district, and grew up in Chennai. Village roots, city brain 🧠",
       "Boss's birthplace is Madhuranthakam (Kanchipuram). He grew up in Chennai, and that's where the Stark-level engineering started ⚡",
@@ -105,7 +105,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "personality",
-    keys: ["character", "personality", "nature", "attitude", "behaviour", "behavior", "what kind of person", "how is he", "what is he like", "type of person", "kind of guy", "jolly", "funny", "eppadi patta", "epdi patta", "eppadi pata", "epdi pata", "avaru epdi", "avar epdi", "ivar epdi", "ivaru epdi", "gunam", "thillalangadi", "thilalangadi", "stark", "elon", "musk"],
+    keys: ["character", "personality", "nature", "attitude", "behaviour", "behavior", "what kind of person", "how is he", "what is he like", "type of person", "kind of guy", "jolly", "funny", "eppadi patta", "epdi patta", "eppadi pata", "epdi pata", "avaru epdi", "avar epdi", "ivar epdi", "ivaru epdi", "avar eppadi", "avaru eppadi", "ivar eppadi", "describe him", "describe nirmal", "nature of", "kovam", "angry", "anger", "temper", "gunam", "thillalangadi", "thilalangadi", "stark", "elon", "musk"],
     weight: 1.2,
     en: [
       "Personality scan 😎: Super jolly, super knowledgeable, and a proper thillalangadi (smart, sharp, a bit naughty-clever). Think Tony Stark meets Elon Musk, but from Chennai.",
@@ -198,7 +198,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "habits",
-    keys: ["habit", "habits", "bad habit", "smoke", "smoking", "drink", "drinking", "alcohol", "daily routine", "routine", "daily life", "pazhakkam", "palakam", "kettapazhakkam"],
+    keys: ["habit", "habits", "bad habit", "smoke", "smoking", "drink", "drinking", "alcohol", "daily routine", "routine", "daily life", "lifestyle", "life style", "pazhakkam", "palakam", "kettapazhakkam"],
     en: [
       "Habit scan 🔍: In all these years of analysing his daily activities, I haven't found a single bad habit. Not one. Even I'm surprised by that 😲",
       "Clean record ✅: No bad habits detected in years of monitoring. Honestly, that's the most surprising data point in my whole database.",
@@ -210,7 +210,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "helping",
-    keys: ["helping", "helpful", "helps", "help others", "kindness", "generous", "good heart", "good person", "cheated", "emandhu", "emanthu", "eamanthu", "udhavi", "uthavi", "nalla manasu", "nalla manushan", "manusan", "manushan"],
+    keys: ["helping", "helpful", "helps", "help others", "kindness", "generous", "good heart", "good person", "cheated", "emandhu", "emanthu", "eamanthu", "udhavi", "uthavi", "nalla manasu", "nalla manushan", "nallavar", "nallavara", "nalla aal", "nalla paiyan", "good guy", "good man", "manusan", "manushan"],
     en: [
       "Heart scan ❤️: Helping mind on max level. Even when he doesn't have much himself, he quietly helps others without telling anyone.",
       "The sad part? Because he trusts and helps everyone, he's been cheated many times, from school days till now. But he still hasn't stopped helping 🙏",
@@ -224,7 +224,7 @@ const TOPICS: Topic[] = [
   },
   {
     id: "personal",
-    keys: ["personal", "personal life", "as a person", "real life", "outside work", "about him personally", "personally", "superhero", "hero", "secret", "fun fact", "facts about", "something interesting", "interesting", "surprise"],
+    keys: ["personal", "personal life", "as a person", "real life", "outside work", "about him personally", "personally", "superhero", "hero", "secret", "fun fact", "facts about", "something interesting", "interesting", "surprise", "special", "unique", "unmaiya", "unmai", "truth", "honestly"],
     weight: 0.9,
     en: [
       "Personal file 📂: Born in Madhuranthakam, raised in Chennai. Scorpio, Kettai star. Jolly, knowledgeable, a proper thillalangadi. Loves trekking, has friends everywhere, and helps people without being asked. In short: a real-life superhero 🦸",
@@ -257,7 +257,7 @@ const TOPICS: Topic[] = [
   {
     id: "about",
     intent: "about",
-    keys: ["about", "who is", "who's", "whos", "introduce", "introduction", "bio", "background", "profile", "summary", "tell me about", "nirmal", "saravanan", "yaaru", "yaru", "yar", "yaar", "யார்"],
+    keys: ["about", "who is", "who's", "whos", "introduce", "introduction", "bio", "background", "profile", "summary", "tell me about", "nirmal", "saravanan", "pathi", "pathina", "yaaru", "yaru", "yar", "yaar", "யார்"],
     weight: 0.6,
     en: [
       `Meet my Boss 🤖: ${profile.name}, ${profile.title}, based in Chennai.`,
@@ -490,6 +490,12 @@ const TANGLISH = new Set(
 );
 const ENGLISH = new Set(["what", "who", "is", "does", "he", "his", "him", "tell", "the", "about", "how", "where", "can", "do", "you", "me", "are", "show", "which", "why", "any", "like"].map(norm));
 
+// Words that mean the visitor is asking about Nirmal himself
+const SUBJECT = new Set(["nirmal", "saravanan", "avar", "avaru", "avara", "avaruku", "avarukku", "avaroda", "avan", "ivar", "ivaru", "ivara", "ivaroda", "boss", "him", "his", "he"].map(norm));
+
+// When a question is about him but no topic matched, answer from his overall profile
+const ABOUT_HIM = ["personality", "personal", "helping", "cando", "friends", "habits"];
+
 const MORE = ["more", "tell me more", "another", "again", "continue", "else", "inum", "innum", "vera", "veara", "apram", "aprm", "matha", "next"].map(norm);
 const GREETINGS = ["hi", "hello", "hey", "hii", "yo", "vanakam", "sup", "hola", "namaste", "helo", "good morning", "good evening", "gm", "machan", "macha", "bro"].map(norm);
 
@@ -576,6 +582,12 @@ export function think(raw: string, ctx: BrainContext = {}): Reply {
   if ((!best || best.score < 1) && wantsMore && lastTopic) {
     const prev = TOPICS.find((t) => t.id === lastTopic);
     if (prev) best = { topic: prev, score: 1 };
+  }
+
+  if (!best && tokens.some((t) => SUBJECT.has(t))) {
+    const pool = ABOUT_HIM.flatMap((id) => lines(TOPICS.find((t) => t.id === id)![lang], ctx));
+    lastTopic = "personal";
+    return { topic: "personal", lang, text: pick(`him:${lang}`, pool) };
   }
 
   if (!best) {
